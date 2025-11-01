@@ -25,6 +25,8 @@ However, they do not contain a shell and therefore no envsubst (for templates).
 -	[`<version>`, `latest`](https://github.com/Tob1as/static-nginx/blob/main/static-nginx.Dockerfile)
 -	[`<version>-unprivileged`, `latest-unprivileged`](https://github.com/Tob1as/static-nginx/blob/main/static-nginx.unprivileged.Dockerfile)
 
+Alternate static nginx images can be found here: https://github.com/Tob1as/docker-tools
+
 ### How to use this image
 
 ```console
