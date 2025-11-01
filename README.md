@@ -1,3 +1,4 @@
+| **[GitHub](https://github.com/Tob1as/static-nginx)** | **[DockerHub](https://hub.docker.com/r/tobi312/static-nginx)** |
 
 # Static NGINX
 
