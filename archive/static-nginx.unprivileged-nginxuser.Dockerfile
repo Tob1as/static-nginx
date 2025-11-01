@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/tools:static-nginx-unprivileged-nginxuser -f static-nginx.unprivileged-nginxuser.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:nginxuser -f static-nginx.unprivileged-nginxuser.Dockerfile .
 FROM alpine:latest AS builder
 
 ARG PCRE2_VERSION=10.47
@@ -14,7 +14,7 @@ ENV OUTPUT_DIR=/nginx
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
-      org.opencontainers.image.source="https://github.com/Tob1as/docker-tools/"
+      org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
 SHELL ["/bin/ash", "-euxo", "pipefail", "-c"]
 
@@ -332,7 +332,7 @@ Further configuration is required.</p>
 <p>For online documentation and support please refer to
 <a href="http://nginx.org/">nginx.org</a>.<br/>
 This is a static nginx build, for more details see:
-<a href="https://github.com/Tob1as/docker-tools/blob/main/static-nginx.unprivileged-nginxuser.Dockerfile">https://github.com/Tob1as/docker-tools</a>.</p>
+<a href="https://github.com/Tob1as/static-nginx/">https://github.com/Tob1as/static-nginx</a>.</p>
 
 <p><em>Have Fun!</em></p>
 </body>
@@ -364,11 +364,11 @@ LABEL org.opencontainers.image.title="Static NGINX" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
-      org.opencontainers.image.documentation="https://github.com/Tob1as/docker-tools/" \
+      org.opencontainers.image.documentation="https://github.com/Tob1as/static-nginx/" \
       org.opencontainers.image.base.name="scratch" \
       org.opencontainers.image.licenses="BSD-2-Clause license" \
-      org.opencontainers.image.url="https://hub.docker.com/r/tobi312/tools" \
-      org.opencontainers.image.source="https://github.com/Tob1as/docker-tools/"
+      org.opencontainers.image.url="https://hub.docker.com/r/tobi312/static-nginx" \
+      org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /nginx /
