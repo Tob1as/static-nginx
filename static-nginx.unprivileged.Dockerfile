@@ -1,6 +1,6 @@
 # build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:latest-unprivileged -f static-nginx.unprivileged.Dockerfile .
 ARG NGINX_VERSION
-FROM tobi312/static-nginx${NGINX_VERSION:+:${NGINX_VERSION}} AS base
+FROM tobi312/static-nginx:base${NGINX_VERSION:+-${NGINX_VERSION}} AS base
 # based on image from https://github.com/Tob1as/static-nginx/
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
@@ -10,15 +10,13 @@ FROM alpine:latest AS builder-unprivileged
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 ENV OUTPUT_DIR=/nginx
-COPY --from=base / /nginx
-RUN tree ${OUTPUT_DIR}
+COPY --from=base /nginx /nginx
 # unprivileged / non-root user (patch)
 RUN sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?80(\b[^0-9])/\1\28080\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?443(\b[^0-9])/\1\28443\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     chown -R 101:101 /nginx/
-# cleanup (from base image)
-RUN rm ${OUTPUT_DIR}/etc/passwd && rm ${OUTPUT_DIR}/etc/group
 RUN tree ${OUTPUT_DIR}
+
 
 FROM scratch AS binary
 
@@ -31,7 +29,6 @@ ARG OPENSSL_VERSION
 ARG NGINX_VERSION
 
 LABEL org.opencontainers.image.title="Static NGINX" \
-      #org.opencontainers.image.vendor="" \
       org.opencontainers.image.authors="Tobias Hargesheimer <docker@ison.ws>" \
       org.opencontainers.image.version="${NGINX_VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
