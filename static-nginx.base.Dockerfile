@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:base -f static-nginx.base.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:base -f static-nginx.base.Dockerfile .
 FROM alpine:latest AS builder
 
 ARG PCRE2_VERSION=10.47

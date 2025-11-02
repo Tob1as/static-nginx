@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:latest-unprivileged -f static-nginx.unprivileged.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:latest-unprivileged -f static-nginx.unprivileged.Dockerfile .
 ARG NGINX_VERSION
 FROM ghcr.io/tob1as/static-nginx:base${NGINX_VERSION:+-${NGINX_VERSION}} AS base
 # based on image from https://github.com/Tob1as/static-nginx/
