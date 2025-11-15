@@ -1,5 +1,5 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:nginxuser -f static-nginx.unprivileged-nginxuser.Dockerfile .
-FROM alpine:latest AS builder
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t tobi312/static-nginx:debian-nginxuser -f static-nginx.unprivileged-nginxuser.debian.Dockerfile .
+FROM debian:trixie-slim AS builder
 
 ARG PCRE2_VERSION=10.47
 ARG ZLIB_VERSION=1.3.1
@@ -13,28 +13,25 @@ ENV OUTPUT_DIR=/nginx
 
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.revision="${VCS_REF}" \
-      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
+      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}} on Debian" \
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
-SHELL ["/bin/ash", "-euxo", "pipefail", "-c"]
+SHELL ["/bin/bash", "-euxo", "pipefail", "-c"]
 
 WORKDIR /usr/src
 
 RUN echo ">> Install build packages ..." && \
-    apk add --no-cache \
-        build-base \
-        musl-dev \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        ca-certificates \
         wget \
+        g++ \
+        make \
         perl \
-        coreutils \
-        linux-headers \
-        bash \
-        libtool \
-        autoconf \
-        automake \
-        \
-        geoip-dev geoip-static \
+        file \
+        tree \
     && \
+    rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${OUTPUT_DIR}
 
 # https://github.com/PCRE2Project/pcre2
@@ -55,7 +52,7 @@ RUN echo ">> Download: openssl-${OPENSSL_VERSION} ..." && \
 # nginx user
 RUN echo 'nginx:x:101:101:nginx:/var/cache/nginx:/sbin/nologin' >> /etc/passwd ; \
     echo 'nginx:x:101:nginx' >> /etc/group
-    
+
 # === Build NGINX static ===
 # https://github.com/nginx/nginx && https://nginx.org/
 # https://docs.nginx.com/nginx/admin-guide/installing-nginx/installing-nginx-open-source/#sources
@@ -115,7 +112,7 @@ RUN echo ">> Download and BUILD: nginx-${NGINX_VERSION} ..." && \
         --with-cc-opt='-static -Os -fstack-clash-protection -Wformat -Werror=format-security -fno-plt -g' \
         --with-ld-opt='-static -Wl,--as-needed,-O1,--sort-common' \
         # others:
-        --with-http_geoip_module \
+        #--with-http_geoip_module \
     && \
     make -j$(nproc) && \
     strip objs/nginx && \
@@ -363,7 +360,7 @@ LABEL org.opencontainers.image.title="Static NGINX" \
       org.opencontainers.image.version="${NGINX_VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
-      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
+      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}} on Debian" \
       org.opencontainers.image.documentation="https://github.com/Tob1as/static-nginx/" \
       org.opencontainers.image.base.name="scratch" \
       org.opencontainers.image.licenses="BSD-2-Clause license" \
