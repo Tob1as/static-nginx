@@ -11,6 +11,8 @@ ARG VCS_REF
 ENV BUILD_DIR=/usr/src
 ENV OUTPUT_DIR=/nginx
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.revision="${VCS_REF}" \
       org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} (unprivileged/nginxuser) build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}} on Debian" \
@@ -30,9 +32,25 @@ RUN echo ">> Install build packages ..." && \
         perl \
         file \
         tree \
+        \
+        autoconf \
+        automake \
+        libtool \
     && \
     rm -rf /var/lib/apt/lists/* && \
     mkdir -p ${OUTPUT_DIR}
+
+# https://github.com/maxmind/geoip-api-c
+RUN GEOIP1_VERSION=1.6.12 && \
+    echo ">> Download and compile: GeoIP V1 ${GEOIP1_VERSION} ..." && \
+    wget https://github.com/maxmind/geoip-api-c/archive/refs/tags/v${GEOIP1_VERSION}.tar.gz && \
+    tar xf v${GEOIP1_VERSION}.tar.gz && \
+    cd geoip-api-c-${GEOIP1_VERSION} && \
+    ./bootstrap && \
+    ./configure --enable-static --disable-shared && \
+    make -j$(nproc) && \
+    make install && \
+    cd ..
 
 # https://github.com/PCRE2Project/pcre2
 RUN echo ">> Download: pcre2-${PCRE2_VERSION} ..." && \
@@ -112,7 +130,7 @@ RUN echo ">> Download and BUILD: nginx-${NGINX_VERSION} ..." && \
         --with-cc-opt='-static -Os -fstack-clash-protection -Wformat -Werror=format-security -fno-plt -g' \
         --with-ld-opt='-static -Wl,--as-needed,-O1,--sort-common' \
         # others:
-        #--with-http_geoip_module \
+        --with-http_geoip_module \
     && \
     make -j$(nproc) && \
     strip objs/nginx && \
