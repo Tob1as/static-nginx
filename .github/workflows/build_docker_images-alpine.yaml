@@ -1,4 +1,4 @@
-name: 'build docker images'
+name: 'build docker images - alpine'
 
 on:
   push:
@@ -9,7 +9,7 @@ on:
       - 'static-nginx.base-alpine.Dockerfile'
       - 'static-nginx.Dockerfile'
       - 'static-nginx.unprivileged.Dockerfile'
-      - '.github/workflows/build_docker_images.yaml'
+      - '.github/workflows/build_docker_images-alpine.yaml'
   workflow_dispatch:
   #schedule:
   #  - cron: '30 5 23 * *'  # At 05:30 on day-of-month 28.
@@ -132,6 +132,7 @@ jobs:
             ZLIB_VERSION=${{steps.script.outputs.zlib_version}}
             OPENSSL_VERSION=${{steps.script.outputs.openssl_version}}
             NGINX_VERSION=${{steps.script.outputs.nginx_version}}
+            OS=alpine
           tags: |
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}
@@ -159,6 +160,7 @@ jobs:
             ZLIB_VERSION=${{steps.script.outputs.zlib_version}}
             OPENSSL_VERSION=${{steps.script.outputs.openssl_version}}
             NGINX_VERSION=${{steps.script.outputs.nginx_version}}
+            OS=alpine
           tags: |
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest-unprivileged
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
