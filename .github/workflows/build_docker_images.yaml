@@ -6,7 +6,7 @@ on:
     #  - 'main'
     #  - 'master'
     paths:
-      - 'static-nginx.base.Dockerfile'
+      - 'static-nginx.base-alpine.Dockerfile'
       - 'static-nginx.Dockerfile'
       - 'static-nginx.unprivileged.Dockerfile'
       - '.github/workflows/build_docker_images.yaml'
@@ -81,26 +81,26 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      #- name: Login to DockerHub Container Registry
-      #  uses: docker/login-action@v3
-      #  with:
-      #    registry: docker.io
-      #    username: ${{ secrets.DOCKER_USERNAME }}
-      #    password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to DockerHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
 
-      #- name: Login to RED HAT Quay.io Container Registry
-      #  uses: docker/login-action@v3
-      #  with:
-      #    registry: quay.io
-      #    username: ${{ secrets.REDHAT_QUAY_USERNAME }}
-      #    password: ${{ secrets.REDHAT_QUAY_PASSWORD }}
+      - name: Login to RED HAT Quay.io Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.REDHAT_QUAY_USERNAME }}
+          password: ${{ secrets.REDHAT_QUAY_PASSWORD }}
 
       - name: Build-binary
         uses: docker/build-push-action@v6
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: ./static-nginx.base.Dockerfile
+          file: ./static-nginx.base-alpine.Dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           target: binary
@@ -112,9 +112,9 @@ jobs:
             OPENSSL_VERSION=${{steps.script.outputs.openssl_version}}
             NGINX_VERSION=${{steps.script.outputs.nginx_version}}
           tags: |
-            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base
-            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base-${{steps.script.outputs.nginx_version}}
-            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base-${{steps.script.outputs.nginx_version}}-${{steps.script.outputs.commit_hash}}
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base-alpine
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base-alpine-${{steps.script.outputs.nginx_version}}
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:base-alpine-${{steps.script.outputs.nginx_version}}-${{steps.script.outputs.build_date_numeric}}.${{steps.script.outputs.commit_hash}}
 
       - name: Build-privileged
         uses: docker/build-push-action@v6
@@ -136,6 +136,12 @@ jobs:
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-privileged
+            docker.io/${{steps.script.outputs.docker_repo}}:latest
+            docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}
+            docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}-privileged
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:latest
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}-privileged
 
       - name: Build-unprivileged
         uses: docker/build-push-action@v6
@@ -156,3 +162,7 @@ jobs:
           tags: |
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest-unprivileged
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
+            docker.io/${{steps.script.outputs.docker_repo}}:latest-unprivileged
+            docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:latest-unprivileged
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged

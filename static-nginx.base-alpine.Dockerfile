@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:base -f static-nginx.base.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:base-alpine -f static-nginx.base-alpine.Dockerfile .
 FROM alpine:latest AS builder
 
 ARG PCRE2_VERSION=10.47
@@ -14,7 +14,7 @@ ENV OUTPUT_DIR=/nginx
 
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.revision="${VCS_REF}" \
-      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
+      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}} on Alpine" \
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
 SHELL ["/bin/ash", "-euxo", "pipefail", "-c"]
@@ -366,7 +366,7 @@ LABEL org.opencontainers.image.title="Static NGINX" \
       org.opencontainers.image.version="${NGINX_VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
-      org.opencontainers.image.description="Baseimage with Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
+      org.opencontainers.image.description="Baseimage with Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}} on Alpine" \
       org.opencontainers.image.documentation="https://github.com/Tob1as/static-nginx/" \
       org.opencontainers.image.base.name="scratch" \
       org.opencontainers.image.licenses="BSD-2-Clause license" \

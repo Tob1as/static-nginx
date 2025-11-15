@@ -1,6 +1,7 @@
 # build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:latest -f static-nginx.Dockerfile .
 ARG NGINX_VERSION
-FROM ghcr.io/tob1as/static-nginx:base${NGINX_VERSION:+-${NGINX_VERSION}} AS base
+ARG OS=alpine
+FROM ghcr.io/tob1as/static-nginx:base-${OS}${NGINX_VERSION:+-${NGINX_VERSION}} AS base
 # based on image from https://github.com/Tob1as/static-nginx/
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"

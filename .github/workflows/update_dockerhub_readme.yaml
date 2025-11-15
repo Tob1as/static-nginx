@@ -1,12 +1,12 @@
 name: 'Update: DockerHub ReadMe'
 
 on:
-  #push:
+  push:
     #branches:
     #  - 'main'
     #  - 'master'
-  #  paths:
-  #    - 'README.md'
+    paths:
+      - 'README.md'
   workflow_dispatch:
   #schedule:
   #  - cron: '00 04 01 * *'  # At 04:00 on day-of-month 01.
