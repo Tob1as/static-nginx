@@ -1,4 +1,4 @@
-| **[GitHub](https://github.com/Tob1as/static-nginx)** | **[DockerHub](https://hub.docker.com/r/tobi312/static-nginx)** |
+| **[GitHub](https://github.com/Tob1as/static-nginx)** | **[DockerHub](https://hub.docker.com/r/tobi312/static-nginx)** | **[Quay.io](https://quay.io/repository/tobi312/static-nginx)** |
 
 # Static NGINX
 
@@ -29,10 +29,19 @@ Alternate static nginx images can be found here: https://github.com/Tob1as/docke
 
 ### How to use this image
 
+Run NGINX container:
 ```console
 # privileged / root user
-$ docker run --name some-nginx -p 8080:80 -v ${PWD}/html:/usr/share/nginx/html:ro -d tobi312/static-nginx:latest
+$ docker run --name some-nginx -p 8080:80 -v ${PWD}/html:/usr/share/nginx/html:ro -d docker.io/tobi312/static-nginx:latest
 
 # unprivileged / nginx user
-$ docker run --name some-nginx -p 8080:8080 -v ${PWD}/html:/usr/share/nginx/html:ro -d tobi312/static-nginx:latest-unprivileged
+$ docker run --name some-nginx -p 8080:8080 -v ${PWD}/html:/usr/share/nginx/html:ro -d docker.io/tobi312/static-nginx:latest-unprivileged
+```
+
+Use in own image:
+```Dockerfile
+# build on alpine:
+COPY --from=ghcr.io/tob1as/static-nginx:base-alpine /nginx /
+# build on debian:
+COPY --from=ghcr.io/tob1as/static-nginx:base-debian /nginx /
 ```
