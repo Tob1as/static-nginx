@@ -64,12 +64,12 @@ jobs:
       #    short_description: ${{ github.event.repository.description }}
       #    readme_file: 'README.md'
 
-      # https://github.com/christian-korneck/update-container-description-action
-      - name: Quay.io Description
-        uses: christian-korneck/update-container-description-action@v1
-        env:
-          DOCKER_APIKEY: ${{ secrets.REDHAT_QUAY_PASSWORD }}
-        with:
-          destination_container_repo: quay.io/${{steps.script.outputs.redhat_quay_repo}}
-          provider: quay
-          readme_file: 'README.md'
+      ## https://github.com/christian-korneck/update-container-description-action
+      #- name: Quay.io Description
+      #  uses: christian-korneck/update-container-description-action@v1
+      #  env:
+      #    DOCKER_APIKEY: ${{ secrets.APIKEY__QUAY_IO }}
+      #  with:
+      #    destination_container_repo: quay.io/${{steps.script.outputs.redhat_quay_repo}}
+      #    provider: quay
+      #    readme_file: 'README.md'
