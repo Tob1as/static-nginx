@@ -45,6 +45,7 @@ RUN GEOIP1_VERSION=1.6.12 && \
     echo ">> Download and compile: GeoIP V1 ${GEOIP1_VERSION} ..." && \
     wget https://github.com/maxmind/geoip-api-c/archive/refs/tags/v${GEOIP1_VERSION}.tar.gz && \
     tar xf v${GEOIP1_VERSION}.tar.gz && \
+    rm v${GEOIP1_VERSION}.tar.gz && \
     cd geoip-api-c-${GEOIP1_VERSION} && \
     ./bootstrap && \
     ./configure --enable-static --disable-shared && \
