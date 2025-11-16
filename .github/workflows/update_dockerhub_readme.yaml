@@ -6,6 +6,7 @@ on:
     #  - 'main'
     #  - 'master'
     paths:
+      - '.github/workflows/update_dockerhub_readme.yaml'
       - 'README.md'
   workflow_dispatch:
   #schedule:
