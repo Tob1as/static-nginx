@@ -7,6 +7,15 @@ LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
 
+FROM alpine:latest AS builder-privileged
+LABEL org.opencontainers.image.title="Static NGINX"\
+      org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
+ENV OUTPUT_DIR=/nginx
+COPY --from=base /nginx /nginx
+# privileged / root user (patch)
+RUN mkdir -p ${OUTPUT_DIR}/var/run
+RUN tree ${OUTPUT_DIR}
+
 FROM scratch AS binary
 
 ARG VCS_REF
@@ -29,8 +38,8 @@ LABEL org.opencontainers.image.title="Static NGINX" \
       org.opencontainers.image.url="https://hub.docker.com/r/tobi312/static-nginx" \
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
-COPY --from=base /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=base /nginx /
+COPY --from=builder-privileged /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=builder-privileged /nginx /
 
 COPY <<EOF /etc/passwd
 root:x:0:0:root:/root:/sbin/nologin

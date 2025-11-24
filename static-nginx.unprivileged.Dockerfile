@@ -13,7 +13,8 @@ LABEL org.opencontainers.image.title="Static NGINX"\
 ENV OUTPUT_DIR=/nginx
 COPY --from=base /nginx /nginx
 # unprivileged / non-root user (patch)
-RUN sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?80(\b[^0-9])/\1\28080\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
+RUN mkdir -p ${OUTPUT_DIR}/var/run && \
+    sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?80(\b[^0-9])/\1\28080\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?443(\b[^0-9])/\1\28443\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     chown -R 101:101 /nginx/
 RUN tree ${OUTPUT_DIR}

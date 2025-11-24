@@ -135,14 +135,15 @@ RUN echo ">> Download and BUILD: nginx-${NGINX_VERSION} ..." && \
     && \
     make -j$(nproc) && \
     strip objs/nginx && \
+    make DESTDIR=${OUTPUT_DIR} install && \
     cd ..
 
 RUN echo ">> do something after builds ..." && \
-    mkdir -p ${OUTPUT_DIR}/etc/nginx/ ${OUTPUT_DIR}/var/cache/nginx/ ${OUTPUT_DIR}/usr/sbin ${OUTPUT_DIR}/usr/lib/nginx/modules ${OUTPUT_DIR}/var/run ${OUTPUT_DIR}/var/log/nginx ${OUTPUT_DIR}/usr/share/nginx/html ${OUTPUT_DIR}/etc/ssl/ && \
-    cp nginx-${NGINX_VERSION}/objs/nginx ${OUTPUT_DIR}/usr/sbin/ && \
-    cp -r nginx-${NGINX_VERSION}/conf/. ${OUTPUT_DIR}/etc/nginx/ && \
-    #cp -r nginx-${NGINX_VERSION}/html/. ${OUTPUT_DIR}/usr/share/nginx/html && \
-    mv ${OUTPUT_DIR}/etc/nginx/nginx.conf ${OUTPUT_DIR}/etc/nginx/nginx.conf.bak && \
+    rmdir ${OUTPUT_DIR}/dev 2>/dev/null || true && \
+    rm -rf ${OUTPUT_DIR}/etc/nginx/html && \
+    find ${OUTPUT_DIR}/etc/nginx -name "*.default" -delete && \
+    mkdir -p ${OUTPUT_DIR}/var/cache/nginx/ ${OUTPUT_DIR}/usr/lib/nginx/modules ${OUTPUT_DIR}/var/log/nginx ${OUTPUT_DIR}/usr/share/nginx/html ${OUTPUT_DIR}/etc/nginx/conf.d && \
+    mv ${OUTPUT_DIR}/etc/nginx/nginx.conf ${OUTPUT_DIR}/etc/nginx/nginx.conf.default && \
     file ${OUTPUT_DIR}/usr/sbin/nginx && \
     #ldd ${OUTPUT_DIR}/usr/sbin/nginx && \
     #tree ${OUTPUT_DIR} && \
@@ -354,6 +355,9 @@ This is a static nginx build, for more details see:
 </body>
 </html>
 EOF
+
+# fix "COPY --from" ERROR: failed to build: failed to solve: cannot copy to non-directory: /var/run
+RUN rm -rf ${OUTPUT_DIR}/var/run
 
 RUN tree ${OUTPUT_DIR}
 
