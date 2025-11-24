@@ -11,9 +11,13 @@ FROM alpine:latest AS builder-privileged
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 ENV OUTPUT_DIR=/nginx
+# nginx user
+RUN echo 'nginx:x:101:101:nginx:/var/cache/nginx:/sbin/nologin' >> /etc/passwd ; \
+    echo 'nginx:x:101:nginx' >> /etc/group
+# copy static nginx
 COPY --from=base /nginx /nginx
-# privileged / root user (patch)
-RUN mkdir -p ${OUTPUT_DIR}/var/run
+RUN mkdir -p ${OUTPUT_DIR}/var/run && \
+    rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default
 RUN tree ${OUTPUT_DIR}
 
 FROM scratch AS binary
