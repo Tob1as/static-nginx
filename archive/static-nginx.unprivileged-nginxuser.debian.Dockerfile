@@ -135,14 +135,15 @@ RUN echo ">> Download and BUILD: nginx-${NGINX_VERSION} ..." && \
     && \
     make -j$(nproc) && \
     strip objs/nginx && \
+    make DESTDIR=${OUTPUT_DIR} install && \
     cd ..
 
 RUN echo ">> do something after builds ..." && \
-    mkdir -p ${OUTPUT_DIR}/etc/nginx/ ${OUTPUT_DIR}/var/cache/nginx/ ${OUTPUT_DIR}/usr/sbin ${OUTPUT_DIR}/usr/lib/nginx/modules ${OUTPUT_DIR}/var/run ${OUTPUT_DIR}/var/log/nginx ${OUTPUT_DIR}/usr/share/nginx/html ${OUTPUT_DIR}/etc/ssl/ && \
-    cp nginx-${NGINX_VERSION}/objs/nginx ${OUTPUT_DIR}/usr/sbin/ && \
-    cp -r nginx-${NGINX_VERSION}/conf/. ${OUTPUT_DIR}/etc/nginx/ && \
-    #cp -r nginx-${NGINX_VERSION}/html/. ${OUTPUT_DIR}/usr/share/nginx/html && \
-    mv ${OUTPUT_DIR}/etc/nginx/nginx.conf ${OUTPUT_DIR}/etc/nginx/nginx.conf.bak && \
+    rmdir ${OUTPUT_DIR}/dev 2>/dev/null || true && \
+    rm -rf ${OUTPUT_DIR}/etc/nginx/html && \
+    find ${OUTPUT_DIR}/etc/nginx -name "*.default" -delete && \
+    mkdir -p ${OUTPUT_DIR}/var/cache/nginx/ ${OUTPUT_DIR}/usr/lib/nginx/modules ${OUTPUT_DIR}/var/log/nginx ${OUTPUT_DIR}/usr/share/nginx/html ${OUTPUT_DIR}/etc/nginx/conf.d && \
+    mv ${OUTPUT_DIR}/etc/nginx/nginx.conf ${OUTPUT_DIR}/etc/nginx/nginx.conf.default && \
     file ${OUTPUT_DIR}/usr/sbin/nginx && \
     #ldd ${OUTPUT_DIR}/usr/sbin/nginx && \
     #tree ${OUTPUT_DIR} && \
@@ -355,12 +356,22 @@ This is a static nginx build, for more details see:
 </html>
 EOF
 
-RUN tree ${OUTPUT_DIR}
+RUN rm -rf ${OUTPUT_DIR}/var/run
+#RUN rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default
 
 # unprivileged / non-root user (patch)
 RUN sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?80(\b[^0-9])/\1\28080\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?443(\b[^0-9])/\1\28443\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
-    chown -R 101:101 /nginx/
+    sed -i '/user  nginx;/d' ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
+    sed -i 's,\(/var\)\{0\,1\}/run/nginx.pid,/tmp/nginx.pid,' ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
+    sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
+    chown -R 101:0 ${OUTPUT_DIR}/var/cache/nginx && \
+    chmod -R g+w ${OUTPUT_DIR}/var/cache/nginx && \
+    chown -R 101:0 ${OUTPUT_DIR}/etc/nginx && \
+    chmod -R g+w ${OUTPUT_DIR}/etc/nginx && \
+    mkdir -p ${OUTPUT_DIR}/tmp && chmod -R 1777 ${OUTPUT_DIR}/tmp
+
+RUN tree ${OUTPUT_DIR}
 
 
 FROM scratch AS binary
