@@ -16,9 +16,10 @@ RUN echo 'nginx:x:101:101:nginx:/var/cache/nginx:/sbin/nologin' >> /etc/passwd ;
     echo 'nginx:x:101:nginx' >> /etc/group
 # copy static nginx
 COPY --from=base /nginx /nginx
-RUN mkdir -p ${OUTPUT_DIR}/var/run && \
-    rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default
+RUN rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default && \
+    mkdir -p ${OUTPUT_DIR}/var/run
 RUN tree ${OUTPUT_DIR}
+
 
 FROM scratch AS binary
 

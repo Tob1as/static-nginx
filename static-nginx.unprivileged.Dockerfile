@@ -16,18 +16,18 @@ RUN echo 'nginx:x:101:101:nginx:/var/cache/nginx:/sbin/nologin' >> /etc/passwd ;
     echo 'nginx:x:101:nginx' >> /etc/group
 # copy static nginx
 COPY --from=base /nginx /nginx
-RUN mkdir -p ${OUTPUT_DIR}/var/run && \
-    rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default
+RUN rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default
 # unprivileged / non-root user (patch)
 RUN sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?80(\b[^0-9])/\1\28080\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
     sed -i -E 's/^(\s*#?\s*listen\s+)(\[::\]:)?443(\b[^0-9])/\1\28443\3/' ${OUTPUT_DIR}/etc/nginx/conf.d/default.conf && \
-    sed -i '/user  nginx;/d' /etc/nginx/nginx.conf && \
+    sed -i '/user  nginx;/d' ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
     sed -i 's,\(/var\)\{0\,1\}/run/nginx.pid,/tmp/nginx.pid,' ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
     sed -i "/^http {/a \    proxy_temp_path /tmp/proxy_temp;\n    client_body_temp_path /tmp/client_temp;\n    fastcgi_temp_path /tmp/fastcgi_temp;\n    uwsgi_temp_path /tmp/uwsgi_temp;\n    scgi_temp_path /tmp/scgi_temp;\n" ${OUTPUT_DIR}/etc/nginx/nginx.conf && \
-    chown -R 101:0 /var/cache/nginx && \
-    chmod -R g+w /var/cache/nginx && \
-    chown -R 101:0 /etc/nginx && \
-    chmod -R g+w /etc/nginx
+    chown -R 101:0 ${OUTPUT_DIR}/var/cache/nginx && \
+    chmod -R g+w ${OUTPUT_DIR}/var/cache/nginx && \
+    chown -R 101:0 ${OUTPUT_DIR}/etc/nginx && \
+    chmod -R g+w ${OUTPUT_DIR}/etc/nginx && \
+    mkdir -p ${OUTPUT_DIR}/tmp && chmod -R 1777 ${OUTPUT_DIR}/tmp
 RUN tree ${OUTPUT_DIR}
 
 
