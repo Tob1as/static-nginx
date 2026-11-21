@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.29.3 -t ghcr.io/tob1as/static-nginx:latest -f static-nginx.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t ghcr.io/tob1as/static-nginx:latest -f static-nginx.Dockerfile .
 ARG NGINX_VERSION
 ARG OS=alpine
 FROM ghcr.io/tob1as/static-nginx:base-${OS}${NGINX_VERSION:+-${NGINX_VERSION}} AS base
@@ -7,7 +7,8 @@ LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 
 
-FROM alpine:latest AS builder-privileged
+# hadolint ignore=DL3007
+FROM docker.io/library/alpine:latest AS builder-privileged
 LABEL org.opencontainers.image.title="Static NGINX"\
       org.opencontainers.image.source="https://github.com/Tob1as/static-nginx/"
 ENV OUTPUT_DIR=/nginx
@@ -16,8 +17,12 @@ RUN echo 'nginx:x:101:101:nginx:/var/cache/nginx:/sbin/nologin' >> /etc/passwd ;
     echo 'nginx:x:101:nginx' >> /etc/group
 # copy static nginx
 COPY --from=base /nginx /nginx
+# like official image: /var/run -> /run, /tmp world-writable
 RUN rm -f ${OUTPUT_DIR}/etc/nginx/nginx.conf.default && \
-    mkdir -p ${OUTPUT_DIR}/var/run
+    mkdir -p ${OUTPUT_DIR}/run ${OUTPUT_DIR}/tmp && \
+    chmod 1777 ${OUTPUT_DIR}/tmp && \
+    rm -rf ${OUTPUT_DIR}/var/run && \
+    ln -s /run ${OUTPUT_DIR}/var/run
 RUN tree ${OUTPUT_DIR}
 
 
@@ -26,17 +31,23 @@ FROM scratch AS binary
 ARG VCS_REF
 ARG BUILD_DATE
 
+ARG NGINX_VERSION
 ARG PCRE2_VERSION
 ARG ZLIB_VERSION
 ARG OPENSSL_VERSION
-ARG NGINX_VERSION
+ARG LIBMAXMINDDB_VERSION
+ARG LIBGEOIP_VERSION
+ARG LIBGD_VERSION
+ARG QUICKJS_VERSION
+ARG NJS_VERSION
+ARG NGINX_ACME_VERSION
 
 LABEL org.opencontainers.image.title="Static NGINX" \
       org.opencontainers.image.authors="Tobias Hargesheimer <docker@ison.ws>" \
       org.opencontainers.image.version="${NGINX_VERSION}" \
       org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.revision="${VCS_REF}" \
-      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}} and openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}" \
+      org.opencontainers.image.description="Static NGINX${NGINX_VERSION:+ ${NGINX_VERSION}} build with pcre2${PCRE2_VERSION:+-${PCRE2_VERSION}}, zlib${ZLIB_VERSION:+-${ZLIB_VERSION}}, openssl${OPENSSL_VERSION:+-${OPENSSL_VERSION}}, libmaxminddb${LIBMAXMINDDB_VERSION:+-${LIBMAXMINDDB_VERSION}}, libgeoip${LIBGEOIP_VERSION:+-${LIBGEOIP_VERSION}}, libgd${LIBGD_VERSION:+-${LIBGD_VERSION}}, quickjs${QUICKJS_VERSION:+-${QUICKJS_VERSION}}, njs${NJS_VERSION:+-${NJS_VERSION}} and nginx-acme${NGINX_ACME_VERSION:+-${NGINX_ACME_VERSION}}" \
       org.opencontainers.image.documentation="https://github.com/Tob1as/static-nginx/" \
       org.opencontainers.image.base.name="scratch" \
       org.opencontainers.image.licenses="BSD-2-Clause license" \

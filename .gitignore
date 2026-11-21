@@ -1,0 +1,3 @@
+temp/
+# GeoIP database
+tests/*.mmdb
