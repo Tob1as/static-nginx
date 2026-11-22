@@ -7,7 +7,7 @@ on:
     #  - 'master'
     paths:
       - 'static-nginx.base-alpine.Dockerfile'
-      - 'static-nginx.Dockerfile'
+      - 'static-nginx.privileged.Dockerfile'
       - 'static-nginx.unprivileged.Dockerfile'
       - '.github/workflows/build_docker_images-alpine.yaml'
   workflow_dispatch:
@@ -141,7 +141,7 @@ jobs:
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
-          file: ./static-nginx.Dockerfile
+          file: ./static-nginx.privileged.Dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm/v7
           push: true
           target: binary
@@ -163,12 +163,16 @@ jobs:
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-privileged
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:privileged
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-privileged-${{steps.script.outputs.build_date_numeric}}.${{steps.script.outputs.commit_hash}}
             docker.io/${{steps.script.outputs.docker_repo}}:latest
             docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}
             docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}-privileged
+            docker.io/${{steps.script.outputs.docker_repo}}:privileged
             quay.io/${{steps.script.outputs.redhat_quay_repo}}:latest
             quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}
             quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}-privileged
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:privileged
 
       - name: Build-unprivileged
         uses: docker/build-push-action@v6
@@ -196,7 +200,11 @@ jobs:
           tags: |
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:latest-unprivileged
             ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:unprivileged
+            ${{steps.script.outputs.git_url}}/${{steps.script.outputs.git_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged-${{steps.script.outputs.build_date_numeric}}.${{steps.script.outputs.commit_hash}}
             docker.io/${{steps.script.outputs.docker_repo}}:latest-unprivileged
             docker.io/${{steps.script.outputs.docker_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
+            docker.io/${{steps.script.outputs.docker_repo}}:unprivileged
             quay.io/${{steps.script.outputs.redhat_quay_repo}}:latest-unprivileged
             quay.io/${{steps.script.outputs.redhat_quay_repo}}:${{steps.script.outputs.nginx_version}}-unprivileged
+            quay.io/${{steps.script.outputs.redhat_quay_repo}}:unprivileged

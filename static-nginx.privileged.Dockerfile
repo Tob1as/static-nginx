@@ -1,4 +1,4 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t ghcr.io/tob1as/static-nginx:latest -f static-nginx.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t ghcr.io/tob1as/static-nginx:latest -f static-nginx.privileged.Dockerfile .
 ARG NGINX_VERSION
 ARG OS=alpine
 FROM ghcr.io/tob1as/static-nginx:base-${OS}${NGINX_VERSION:+-${NGINX_VERSION}} AS base

@@ -22,7 +22,7 @@ However, they do not contain a shell and therefore no envsubst (for templates).
 
 ### Supported tags and respective `Dockerfile` links
 
--	[`<version>`, `latest`](https://github.com/Tob1as/static-nginx/blob/main/static-nginx.Dockerfile)
+-	[`<version>`, `latest`](https://github.com/Tob1as/static-nginx/blob/main/static-nginx.privileged.Dockerfile)
 -	[`<version>-unprivileged`, `latest-unprivileged`](https://github.com/Tob1as/static-nginx/blob/main/static-nginx.unprivileged.Dockerfile)
 
 Alternate static nginx images can be found here: https://github.com/Tob1as/docker-tools

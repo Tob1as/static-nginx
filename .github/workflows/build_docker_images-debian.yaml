@@ -7,7 +7,7 @@ on:
     #  - 'master'
     paths:
       - 'static-nginx.base-debian.Dockerfile'
-      #- 'static-nginx.Dockerfile'
+      #- 'static-nginx.privileged.Dockerfile'
       #- 'static-nginx.unprivileged.Dockerfile'
       - '.github/workflows/build_docker_images-debian.yaml'
   workflow_dispatch:
