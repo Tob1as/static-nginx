@@ -35,7 +35,7 @@ Images: `ghcr.io/tob1as/static-nginx`, `docker.io/tobi312/static-nginx`, `quay.i
 | `base-alpine`, `base-alpine-<version>`, `base-alpine-<version>-<date>.<commit>` | base image (only `/nginx`, see "Use in own image"), built on Alpine (musl) | ghcr.io | `linux/amd64`, `linux/arm64`, `linux/arm/v7` |
 | `base-debian`, `base-debian-<version>`, `base-debian-<version>-<date>.<commit>` | base image, built on Debian (glibc) | ghcr.io | `linux/amd64`, `linux/arm64` |
 
-`<version>` = nginx version, e.g. `1.31.9`; `<date>.<commit>` e.g. `20261123101500.1a2b3c4`
+`<version>` = nginx version, e.g. `1.31.10`; `<date>.<commit>` e.g. `20261123101500.1a2b3c4`
 
 ### How to use this image
 
@@ -121,10 +121,10 @@ Local build (versions: see `ARG` in the [base Dockerfiles](https://github.com/To
 The privileged/unprivileged images use the base image `ghcr.io/tob1as/static-nginx:base-alpine[-<NGINX_VERSION>]` (pulled from ghcr.io, if not available locally):
 ```console
 # base image
-$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t ghcr.io/tob1as/static-nginx:base-alpine-1.31.9 -f static-nginx.base-alpine.Dockerfile .
+$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.10 -t ghcr.io/tob1as/static-nginx:base-alpine-1.31.10 -f static-nginx.base-alpine.Dockerfile .
 # privileged / unprivileged image
-$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t local/static-nginx:latest -f static-nginx.privileged.Dockerfile .
-$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t local/static-nginx:latest-unprivileged -f static-nginx.unprivileged.Dockerfile .
+$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.10 -t local/static-nginx:latest -f static-nginx.privileged.Dockerfile .
+$ docker build --progress=plain --target binary --build-arg NGINX_VERSION=1.31.10 -t local/static-nginx:latest-unprivileged -f static-nginx.unprivileged.Dockerfile .
 ```
 
 CI ([GitHub Actions](https://github.com/Tob1as/static-nginx/tree/main/.github/workflows)):
