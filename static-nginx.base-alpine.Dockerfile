@@ -1,10 +1,10 @@
-# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.31.9 -t ghcr.io/tob1as/static-nginx:base-alpine -f static-nginx.base-alpine.Dockerfile .
+# build: docker build --no-cache --progress=plain --target binary --build-arg NGINX_VERSION=1.31.10 -t ghcr.io/tob1as/static-nginx:base-alpine -f static-nginx.base-alpine.Dockerfile .
 #
 # Static NGINX with all modules of the official images "nginx:mainline-alpine-slim" (built-in)
 # and "nginx:mainline-alpine" (dynamic: acme, geoip, image_filter, njs, xslt), here compiled in statically.
 #
 # global build args (must be re-declared without value inside each stage to be used there)
-ARG NGINX_VERSION=1.31.9
+ARG NGINX_VERSION=1.31.10
 ARG PCRE2_VERSION=10.49
 ARG ZLIB_VERSION=1.4
 ARG OPENSSL_VERSION=3.5.9

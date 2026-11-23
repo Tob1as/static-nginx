@@ -1,3 +1,5 @@
 temp/
+# tests: not committed yet (remove this line to commit the tests folder)
+tests/
 # GeoIP database
 tests/*.mmdb
